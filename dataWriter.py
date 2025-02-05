@@ -5,26 +5,24 @@ import multiprocessing as mp
 class Recorder:
     def __init__(self, name):
         self.name = name
-        self.matrix = pd.DataFrame(columns=[name + str(1), name + str(2), name + str(3)])
+        if self.name == "Cuff":
+            self.cols = []
+        else:
+            self.cols = [[], [], []]
+        self.count = 0
     
     def add(self, sensorNum, value):
-        column_name = self.name + str(sensorNum)
-        if column_name in self.matrix.columns:
-            self.matrix.loc[len(self.matrix), column_name] = value
+        if self.name == "Cuff":
+            self.cols.append(value)
+        else:
+            self.cols[sensorNum].append(value)
 
     def writeData(self):
-        self.matrix.to_csv(self.name + '_data.csv', index=False)
+        df = pd.DataFrame()
+        if self.name == "Cuff":
+            df.insert(0, column=self.name, value=self.cols)
+        else:
+            for i in range(3):
+                df.insert(i, column=self.name + str(i), value=self.cols[i])
+        df.to_csv(self.name + '_data.csv', index=False)
 
-
-# def main():
-#     test = Recorder('test')
-
-#     for i in range(100):
-#         test.add(1, i)
-#         test.add(2, 2*i)
-#         test.add(3, 3*i)
-    
-#     test.writeData()
-
-# if __name__ == "__main__":
-#     main()

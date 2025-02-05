@@ -26,7 +26,7 @@ void loop() {
 
     // linear relationship obtained from calibration
     double cuffPressure = 63.9531 * sensorVoltage - 34.9409;  // current pressure in the cuff
-    // Serial.println(cuffPressure);
+    Serial.println(cuffPressure);
 
     if (cuffPressure < targetPressure) {
       // turn pump on to cuff
@@ -42,7 +42,7 @@ void loop() {
 
     // linear relationship obtained from calibration
     double cuffPressure = 63.9531 * sensorVoltage - 34.9409;  // current pressure in the cuff
-    // Serial.println(cuffPressure);
+    Serial.println(cuffPressure);
 
     if (cuffPressure > 0) {
       // turn pump on to cuff
@@ -51,7 +51,8 @@ void loop() {
       digitalWrite(pump, LOW);
     } else {
       digitalWrite(vacu, LOW);
-      Serial.write("End\n");
+      //Serial.write("End\n");
+      command = "End";
     }
   }
 }

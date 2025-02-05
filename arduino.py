@@ -38,28 +38,28 @@ class Arduino:
                     self.serial.write(b'A4\n')  # Request reading from A4
                     value_A4 = float(self.serial.read_until(expected=b'\n').decode().strip().replace('\r.', ''))
                     self.dq.put([self.name+'4', value_A4]) # store value in queue
-                    self.data.add(1, value_A4) # add value to recorder
+                    self.data.add(0, value_A4) # add value to recorder
                     barrier.wait(timeout=5)
 
                     # write A5 to serial buffer so Serial.available() > 0 is true
                     self.serial.write(b'A5\n') #A5 Reading
                     value_A5 = float(self.serial.read_until(expected=b'\n').decode().strip().replace('\r.', ''))
                     self.dq.put([self.name+'5',value_A5]) # store value in queue
-                    self.data.add(2, value_A5) # add value to recorder
+                    self.data.add(1, value_A5) # add value to recorder
                     barrier.wait(timeout=5)
-                        
+
                     # write A5 to serial buffer so Serial.available() > 0 is true
                     self.serial.write(b'A6\n') #A6 Reading
                     value_A6 = float(self.serial.read_until(expected=b'\n').decode().strip().replace('\r.', ''))
                     self.dq.put([self.name+'6',value_A6]) # store value in queue
-                    self.data.add(3, value_A6) # add value to recorder
+                    self.data.add(2, value_A6) # add value to recorder
                     barrier.wait(timeout=5)
 
                     self.data.writeData()
 
                     time.sleep(0.001)
 
-                except Exception: 
+                except Exception:
                     self.dq.put(["STOP", -1.0])
                     self.data.writeData()
                     print(Exception)
@@ -67,17 +67,23 @@ class Arduino:
             self.serial.write(b'Start\n')
 
             while self.run:
-                try:
-                    command = self.serial.read_until()
-                    command = command.decode("utf-8")
-                    print("command: ", command)
-                    if (command == 'End\n'):
-                        process_manager.terminate_processes()
-                    else:
-                        continue
+                #try:
+                    #command = self.serial.read_until()
+                    #command = command.decode("utf-8")
+                pressure = float(self.serial.read_until(expected=b'\n').decode().strip().replace('\r.', ''))
+                self.dq.put([self.name,pressure])
+                self.data.add(0, pressure)
+                self.data.writeData()
+                    # print("command: ", command)
+                    # if (command == 'End\n'):
+                    #     process_manager.terminate_processes()
+                    # else:
+                    #     continue
 
-                except Exception:
-                    continue
+                # except Exception:
+                #     self.dq.put(["STOP", -1.0])
+                #     self.data.writeData()
+                #     print(Exception)
 
     def stop(self):
         self.run = False

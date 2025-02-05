@@ -3,7 +3,7 @@ import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 import queue
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QPainter
 import process_manager
 
 ard_instances = []
@@ -24,23 +24,23 @@ class RealTimePlotter(object):
 
         self.plot = self.win.addPlot(title='Real Time Plot')
         self.plot.showGrid(x=False, y=False)
-        self.plot.setYRange(0, 1.5)
+        self.plot.setYRange(0, 0.3)
         self.plot.enableAutoRange('y', False)
 
         self.tick_font = QFont()
-        self.tick_font.setPointSize(18)
+        self.tick_font.setPointSize(72)
         self.tick_font.setBold(True)  # Set tick font to bold
 
         # Customize the x-axis
         self.x_axis = self.plot.getAxis('bottom')
         self.x_axis.setPen(pg.mkPen(color='k', width=3))
-        self.x_axis.setLabel('# of Sensor Readings', **{'font-size': '24pt'})
+        self.x_axis.setLabel('Sensor Readings', **{'font-size': '48pt'})
         self.x_axis.setStyle(tickFont=self.tick_font)
 
         # Customize the y-axis
         self.y_axis = self.plot.getAxis('left')
         self.y_axis.setPen(pg.mkPen(color='k', width=3))
-        self.y_axis.setLabel('Voltage (volts)', **{'font-size': '24pt'})
+        self.y_axis.setLabel('Voltage (volts)', **{'font-size': '48pt'})
         self.y_axis.setStyle(tickFont=self.tick_font)
 
         # Set push button to stop recording/plotting

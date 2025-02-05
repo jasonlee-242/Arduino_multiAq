@@ -31,7 +31,7 @@ if __name__ == "__main__":
     dataQueue = mp.Queue()
     emptyQueue = mp.Queue()
 
-    ports = ["/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3"]
+    ports = ["/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3", "/dev/ttyUSB0"]
     names = ["B", "R", "G", "Cuff"]
 
     # Instantiate 3 arduinos for data acquisition
