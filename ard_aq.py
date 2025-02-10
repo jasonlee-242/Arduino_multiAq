@@ -2,6 +2,8 @@
 from arduino import *
 from plotter import *
 import multiprocessing as mp
+import sys
+import glob
 
 def openArduino(barrier, name, port, dqueue, baudrate = 115200):
     ard = Arduino(port, baudrate, name, dqueue)
@@ -12,6 +14,27 @@ def startPlotter(dqueue,colors):
     plotter = RealTimePlotter(dqueue,colors)
     plotter.start()
     return
+
+def find_ports():
+    if sys.platform.startswith('win'):
+        ports = ['COM%s' % (i + 1) for i in range(256)]
+    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        ports = glob.glob('/dev/ttyUSB*')
+    elif sys.platform.startswith('darwin'):
+        ports = glob.glob('/dev/ttyUSB*')
+    else:
+        raise Exception('Unsupported Platform')
+
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except (OSError, serial.SerialException):
+            pass
+
+    return result
 
 if __name__ == "__main__":
 
@@ -31,7 +54,8 @@ if __name__ == "__main__":
     dataQueue = mp.Queue()
     emptyQueue = mp.Queue()
 
-    ports = ["/dev/ttyUSB1", "/dev/ttyUSB2", "/dev/ttyUSB3", "/dev/ttyUSB0"]
+    ports = find_ports()
+    print(ports)
     names = ["B", "R", "G", "Cuff"]
 
     # Instantiate 3 arduinos for data acquisition
@@ -39,7 +63,7 @@ if __name__ == "__main__":
     # Instantiate another arduino for cuff pressurization
     arduino_instances.append(Arduino(ports[3], 9600, names[3], emptyQueue, False))
 
-    # ard_processes = [mp.Process(target=openArduino, args=(sensor_barrier, 
+    # ard_processes = [mp.Process(target=openArduino, args=(sensor_barrier,
     #                      names[i], ports[i], dataQueue)) for i in range(len(ports))]
     ard_processes = [mp.Process(target = arduino_instances[i].read, args=(sensor_barrier,)) for i in range(len(ports))]
     ard_processes.append(mp.Process(target = startPlotter, args=(dataQueue, sensorColors)))
