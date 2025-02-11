@@ -67,23 +67,19 @@ class Arduino:
             self.serial.write(b'Start\n')
 
             while self.run:
-                #try:
-                    #command = self.serial.read_until()
-                    #command = command.decode("utf-8")
-                pressure = float(self.serial.read_until(expected=b'\n').decode().strip().replace('\r.', ''))
-                self.dq.put([self.name,pressure])
-                self.data.add(0, pressure)
-                self.data.writeData()
-                    # print("command: ", command)
-                    # if (command == 'End\n'):
-                    #     process_manager.terminate_processes()
-                    # else:
-                    #     continue
+                try:
+                    value = self.serial.read_until(expected=b'\n').decode().strip().replace('\r.', '')
+                    if value == 'End':
+                        process_manager.terminate_processes()
+                    else:
+                        self.dq.put([self.name,float(value)])
+                        self.data.add(0, float(value))
+                        self.data.writeData()
 
-                # except Exception:
-                #     self.dq.put(["STOP", -1.0])
-                #     self.data.writeData()
-                #     print(Exception)
+                except Exception:
+                    self.dq.put(["STOP", -1.0])
+                    self.data.writeData()
+                    print(Exception)
 
     def stop(self):
         self.run = False

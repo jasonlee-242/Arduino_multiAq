@@ -51,7 +51,7 @@ void loop() {
       digitalWrite(pump, LOW);
     } else {
       digitalWrite(vacu, LOW);
-      //Serial.write("End\n");
+      Serial.write("End\n");
       command = "End";
     }
   }
