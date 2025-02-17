@@ -83,6 +83,9 @@ class Arduino:
 
     def stop(self):
         self.run = False
+        if not self.acquire:
+            self.serial.flush()
+            self.serial.write(b'Finish\n')
         print('Stop run')
         self.dq.put(["STOP", -1.0])
         stop_Flag.value += 1

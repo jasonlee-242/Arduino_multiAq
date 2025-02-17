@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
     ports = find_ports()
     arduino_instances = []
-    names = ["R", "B", "G", "Cuff"]
+    names = ["B", "R", "G", "Cuff"]
     for i in range(len(ports)):
         if i + 1 != 4:
             arduino_instances.append(Arduino(ports[i + 1], 115200, names[i], dataQueue, True))
