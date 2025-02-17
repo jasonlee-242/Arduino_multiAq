@@ -1,3 +1,5 @@
+#include <EEPROM.h>
+
 // Pin #s for pumps, solenoid, and sensor. Change here if need be.
 int pump = 5;
 int vacu = 7;
@@ -9,7 +11,8 @@ int targetPressure = 75;
 String command = "empty";
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
+  Serial.println(EEPROM.read(0));
   pinMode(pump, OUTPUT); // set pin 2 to output for pump
   pinMode(vacu, OUTPUT); // set pin 4 to output for pump
   pinMode(valve, OUTPUT); // set pin 6 to output for solenoid

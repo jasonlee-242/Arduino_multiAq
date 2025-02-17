@@ -25,12 +25,13 @@ def find_ports():
     else:
         raise Exception('Unsupported Platform')
 
-    result = []
+    result = {}
     for port in ports:
         try:
-            s = serial.Serial(port)
+            s = serial.Serial(port, 115200)
+            num = int(s.read_until(expected=b'\n').decode().strip().replace('\r.', ''))
             s.close()
-            result.append(port)
+            result.update({num: port})
         except (OSError, serial.SerialException):
             pass
 
@@ -55,12 +56,13 @@ if __name__ == "__main__":
     emptyQueue = mp.Queue()
 
     ports = find_ports()
-    names = ["R", "B", "G"]
-
-    # Instantiate 3 arduinos for data acquisition
-    arduino_instances = [Arduino(ports[i], 115200, names[i], dataQueue, True) for i in range(3)]
-    # Instantiate another arduino for cuff pressurization
-    arduino_instances.append(Arduino(ports[3], 9600, "Cuff", emptyQueue, False))
+    arduino_instances = []
+    names = ["R", "B", "G", "Cuff"]
+    for i in range(len(ports)):
+        if i + 1 != 4:
+            arduino_instances.append(Arduino(ports[i + 1], 115200, names[i], dataQueue, True))
+        else:
+            arduino_instances.append(Arduino(ports[i + 1], 115200, names[i], emptyQueue, False))
 
     # ard_processes = [mp.Process(target=openArduino, args=(sensor_barrier,
     #                      names[i], ports[i], dataQueue)) for i in range(len(ports))]
