@@ -19,7 +19,7 @@ class Arduino:
     def __init__(self, port, baudrate, name, dq, acquire):
         self.name = name
         self.dq = dq
-        self.serial = serial.Serial(port, baudrate, timeout= 10)
+        self.serial = serial.Serial(port, baudrate, timeout= 10, dsrdtr=True)
         print(f'Arduino Connected!')
         self.run = True
         self.data = Recorder(self.name)
@@ -29,6 +29,11 @@ class Arduino:
         print(f'{self.name} preparing to run...')
         self.serial.reset_input_buffer()
         time.sleep(2) #Allow time for Arduinos to prepare
+
+        try:
+            self.data.writeData()
+        except Exception:
+            print(Exception)
 
         # check if arduino is apart of data acquisition
         if self.acquire == True:
@@ -84,7 +89,6 @@ class Arduino:
     def stop(self):
         self.run = False
         if not self.acquire:
-            self.serial.flush()
             self.serial.write(b'Finish\n')
         print('Stop run')
         self.dq.put(["STOP", -1.0])

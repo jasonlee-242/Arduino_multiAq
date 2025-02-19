@@ -62,7 +62,7 @@ if __name__ == "__main__":
         if i + 1 != 4:
             arduino_instances.append(Arduino(ports[i + 1], 115200, names[i], dataQueue, True))
         else:
-            arduino_instances.append(Arduino(ports[i + 1], 115200, names[i], emptyQueue, False))
+            arduino_instances.append(Arduino(ports[i + 1], 9600, names[i], emptyQueue, False))
 
     # ard_processes = [mp.Process(target=openArduino, args=(sensor_barrier,
     #                      names[i], ports[i], dataQueue)) for i in range(len(ports))]

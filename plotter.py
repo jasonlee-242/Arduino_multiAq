@@ -93,4 +93,3 @@ class RealTimePlotter(object):
     def stop(self):
         self.timer.stop()
         process_manager.terminate_processes()
-        # self.app.quit()
