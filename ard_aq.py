@@ -37,8 +37,7 @@ def find_ports():
 
     return result
 
-if __name__ == "__main__":
-
+def runScript():
     sensorColors = {
         'R4': (255,0,0),
         'R5': (132,5,5),
@@ -54,15 +53,18 @@ if __name__ == "__main__":
     sensor_barrier = mp.Barrier(3)
     dataQueue = mp.Queue()
     emptyQueue = mp.Queue()
+    managers = [mp.Manager() for i in range(13)]
+    data = [managers[i*4].list([managers[i*4 + 1].list([]), managers[i*4 + 2].list([]), managers[i*4 + 3].list([])]) for i in range(3)]
+    data2 = managers[12].list([])
 
     ports = find_ports()
     arduino_instances = []
     names = ["B", "R", "G", "Cuff"]
     for i in range(len(ports)):
         if i + 1 != 4:
-            arduino_instances.append(Arduino(ports[i + 1], 115200, names[i], dataQueue, True))
+            arduino_instances.append(Arduino(ports[i + 1], 115200, names[i], dataQueue, True, data[i]))
         else:
-            arduino_instances.append(Arduino(ports[i + 1], 9600, names[i], emptyQueue, False))
+            arduino_instances.append(Arduino(ports[i + 1], 9600, names[i], emptyQueue, False, data2))
 
     # ard_processes = [mp.Process(target=openArduino, args=(sensor_barrier,
     #                      names[i], ports[i], dataQueue)) for i in range(len(ports))]
@@ -71,15 +73,22 @@ if __name__ == "__main__":
 
     process_manager.set_instances(arduino_instances)
 
+    start = time.time_ns()
     for p in ard_processes:
         p.start()
 
     while stop_Flag.value != len(arduino_instances):
         continue
 
+    finish = time.time_ns()
     for arduino in range(len(ard_processes)):
         ard_processes[arduino].terminate()
         print('Joining Arduino...')
         ard_processes[arduino].join()
 
     print("Acquisition Finished!")
+    print(f'Time Elapsed: {(finish-start)/1e9} (s)')
+
+    return
+
+runScript()

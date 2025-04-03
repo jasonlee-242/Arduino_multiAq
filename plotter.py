@@ -1,9 +1,8 @@
-import PyQt6.QtGui
 import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 import queue
-from PyQt6.QtGui import QFont, QPainter
+from PyQt6.QtGui import QFont
 import process_manager
 
 ard_instances = []
